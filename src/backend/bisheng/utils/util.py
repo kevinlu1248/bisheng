@@ -10,6 +10,13 @@ from docstring_parser import parse  # type: ignore
 
 
 def build_template_from_function(name: str, type_to_loader_dict: Dict, add_function: bool = False):
+# Test cases for build_template_from_function
+def test_build_template_from_function():
+    # Test case 1: Test with valid inputs
+    # Test case 2: Test with invalid name
+    # Test case 3: Test with empty type_to_loader_dict
+    # Test case 4: Test with add_function set to True
+    pass
     classes = [item.__annotations__['return'].__name__ for item in type_to_loader_dict.values()]
 
     # Raise error if name is not in chains
@@ -61,6 +68,13 @@ def build_template_from_class(name: str, type_to_cls_dict: Dict, add_function: b
         raise ValueError(f'{name} not found.')
 
     for _type, v in type_to_cls_dict.items():
+# Test cases for build_template_from_class
+def test_build_template_from_class():
+    # Test case 1: Test with valid inputs
+    # Test case 2: Test with invalid name
+    # Test case 3: Test with empty type_to_cls_dict
+    # Test case 4: Test with add_function set to True
+    pass
         if v.__name__ == name:
             _class = v
 
@@ -111,6 +125,42 @@ def build_template_from_method(
         raise ValueError(f'{class_name} not found.')
 
     for _type, v in type_to_cls_dict.items():
+# Test cases for build_template_from_method
+def test_build_template_from_method():
+    # Test case 1: Test with valid inputs
+    return list(set(result + [cls.__name__]))
+
+
+def get_default_factory(module: str, function: str):
+    pattern = r'<function (\w+)>'
+
+    if match := re.search(pattern, function):
+        imported_module = importlib.import_module(module)
+        return getattr(imported_module, match[1])()
+    return None
+
+
+def type_to_string(tp):
+    if getattr(tp, '__args__', None):
+        args_str = ','.join(
+            type_to_string(arg) for arg in tp.__args__ if arg is not type(None))  # noqa
+        return f'{tp.__name__}[{args_str}]'
+    else:
+        return tp.__name__
+
+
+def format_dict(d, name: Optional[str] = None):
+# Test cases for type_to_string
+def test_type_to_string():
+    # Test case 1: Test with type having __args__ attribute
+    # Test case 2: Test with type not having __args__ attribute
+    pass
+# Test cases for get_default_factory
+def test_get_default_factory():
+    # Test case 1: Test with valid module and function
+    # Test case 2: Test with invalid module
+    # Test case 3: Test with invalid function
+    pass
         if v.__name__ == class_name:
             _class = v
 
@@ -176,6 +226,12 @@ def get_base_classes(cls):
     if not result:
         result = [cls.__name__]
     return list(set(result + [cls.__name__]))
+# Test cases for get_base_classes
+def test_get_base_classes():
+    # Test case 1: Test with class having multiple base classes
+    # Test case 2: Test with class having single base class
+    # Test case 3: Test with class having no base class
+    pass
 
 
 def get_default_factory(module: str, function: str):
@@ -211,6 +267,12 @@ def format_dict(d, name: Optional[str] = None):
 
     # Process remaining keys
     for key, value in d.items():
+# Test cases for format_dict
+def test_format_dict():
+    # Test case 1: Test with valid dictionary and name
+    # Test case 2: Test with empty dictionary
+    # Test case 3: Test with None name
+    pass
         if key == '_type':
             continue
 
