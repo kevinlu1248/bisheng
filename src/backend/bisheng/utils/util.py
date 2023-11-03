@@ -10,14 +10,9 @@ from docstring_parser import parse  # type: ignore
 
 
 def build_template_from_function(name: str, type_to_loader_dict: Dict, add_function: bool = False):
+    pass
+
 def test_build_template_from_function():
-    classes = [item.__annotations__['return'].__name__ for item in type_to_loader_dict.values()]
-
-    # Raise error if name is not in chains
-    if name not in classes:
-        raise ValueError(f'{name} not found')
-
-    for _type, v in type_to_loader_dict.items():
     # Test cases will go here
     pass
 
@@ -32,13 +27,6 @@ def test_get_base_classes():
 def test_format_dict():
     # Test cases will go here
     pass
-    classes = [item.__annotations__['return'].__name__ for item in type_to_loader_dict.values()]
-
-    # Raise error if name is not in chains
-    if name not in classes:
-        raise ValueError(f'{name} not found')
-
-    for _type, v in type_to_loader_dict.items():
         if v.__annotations__['return'].__name__ == name:
             _class = v.__annotations__['return']
 
@@ -219,16 +207,19 @@ def type_to_string(tp):
 
 
 def format_dict(d, name: Optional[str] = None):
+    pass
+
 def test_type_to_string():
     # Test cases will go here
     pass
+
 def test_get_default_factory():
     # Test cases will go here
     pass
+
 def test_get_base_classes():
     # Test cases will go here
     pass
-
 
 def get_default_factory(module: str, function: str):
     pattern = r'<function (\w+)>'
@@ -238,14 +229,16 @@ def get_default_factory(module: str, function: str):
         return getattr(imported_module, match[1])()
     return None
 
-
 def type_to_string(tp):
     if getattr(tp, '__args__', None):
         args_str = ','.join(
             type_to_string(arg) for arg in tp.__args__ if arg is not type(None))  # noqa
         return f'{tp.__name__}[{args_str}]'
     else:
+        return tp.__name__
+
 def format_dict(d, name: Optional[str] = None):
+    pass
     """
     Formats a dictionary by removing certain keys and modifying the
     values of other keys.
