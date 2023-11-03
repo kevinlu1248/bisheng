@@ -11,12 +11,7 @@ from docstring_parser import parse  # type: ignore
 
 def build_template_from_function(name: str, type_to_loader_dict: Dict, add_function: bool = False):
 # Test cases for build_template_from_function
-def test_build_template_from_function():
-    # Test case 1: Test with valid inputs
-    # Test case 2: Test with invalid name
-    # Test case 3: Test with empty type_to_loader_dict
-    # Test case 4: Test with add_function set to True
-    pass
+def build_template_from_function(name: str, type_to_loader_dict: Dict, add_function: bool = False):
     classes = [item.__annotations__['return'].__name__ for item in type_to_loader_dict.values()]
 
     # Raise error if name is not in chains
@@ -24,6 +19,12 @@ def test_build_template_from_function():
         raise ValueError(f'{name} not found')
 
     for _type, v in type_to_loader_dict.items():
+def test_build_template_from_function():
+    # Test case 1: Test with valid inputs
+    # Test case 2: Test with invalid name
+    # Test case 3: Test with empty type_to_loader_dict
+    # Test case 4: Test with add_function set to True
+    pass
         if v.__annotations__['return'].__name__ == name:
             _class = v.__annotations__['return']
 
@@ -69,12 +70,6 @@ def build_template_from_class(name: str, type_to_cls_dict: Dict, add_function: b
 
     for _type, v in type_to_cls_dict.items():
 # Test cases for build_template_from_class
-def test_build_template_from_class():
-    # Test case 1: Test with valid inputs
-    # Test case 2: Test with invalid name
-    # Test case 3: Test with empty type_to_cls_dict
-    # Test case 4: Test with add_function set to True
-    pass
         if v.__name__ == name:
             _class = v
 
@@ -84,6 +79,12 @@ def test_build_template_from_class():
             variables = {'_type': _type}
 
             if '__fields__' in _class.__dict__:
+def test_build_template_from_class():
+    # Test case 1: Test with valid inputs
+    # Test case 2: Test with invalid name
+    # Test case 3: Test with empty type_to_cls_dict
+    # Test case 4: Test with add_function set to True
+    pass
                 for class_field_items, value in _class.__fields__.items():
                     if class_field_items in ['callback_manager']:
                         continue
@@ -125,13 +126,10 @@ def build_template_from_method(
         raise ValueError(f'{class_name} not found.')
 
     for _type, v in type_to_cls_dict.items():
-# Test cases for build_template_from_method
+def get_default_factory(module: str, function: str):
 def test_build_template_from_method():
     # Test case 1: Test with valid inputs
-    return list(set(result + [cls.__name__]))
-
-
-def get_default_factory(module: str, function: str):
+    pass
     pattern = r'<function (\w+)>'
 
     if match := re.search(pattern, function):
@@ -151,11 +149,12 @@ def type_to_string(tp):
 
 def format_dict(d, name: Optional[str] = None):
 # Test cases for type_to_string
+
 def test_type_to_string():
     # Test case 1: Test with type having __args__ attribute
     # Test case 2: Test with type not having __args__ attribute
     pass
-# Test cases for get_default_factory
+
 def test_get_default_factory():
     # Test case 1: Test with valid module and function
     # Test case 2: Test with invalid module
@@ -216,8 +215,6 @@ def get_base_classes(cls):
                 continue
             result.append(base.__name__)
             base_classes = get_base_classes(base)
-            # check if the base_classes are in the result
-            # if not, add them
             for base_class in base_classes:
                 if base_class not in result:
                     result.append(base_class)
@@ -226,6 +223,11 @@ def get_base_classes(cls):
     if not result:
         result = [cls.__name__]
     return list(set(result + [cls.__name__]))
+def test_get_base_classes():
+    # Test case 1: Test with class having multiple base classes
+    # Test case 2: Test with class having single base class
+    # Test case 3: Test with class having no base class
+    pass
 # Test cases for get_base_classes
 def test_get_base_classes():
     # Test case 1: Test with class having multiple base classes
@@ -268,11 +270,6 @@ def format_dict(d, name: Optional[str] = None):
     # Process remaining keys
     for key, value in d.items():
 # Test cases for format_dict
-def test_format_dict():
-    # Test case 1: Test with valid dictionary and name
-    # Test case 2: Test with empty dictionary
-    # Test case 3: Test with None name
-    pass
         if key == '_type':
             continue
 
@@ -295,6 +292,11 @@ def test_format_dict():
 
         # Replace 'Mapping' with 'dict'
         if 'Mapping' in _type:
+def test_format_dict():
+    # Test case 1: Test with valid dictionary and name
+    # Test case 2: Test with empty dictionary
+    # Test case 3: Test with None name
+    pass
             _type = _type.replace('Mapping', 'dict')
 
         # Change type from str to Tool
