@@ -11,6 +11,25 @@ from docstring_parser import parse  # type: ignore
 
 def build_template_from_function(name: str, type_to_loader_dict: Dict, add_function: bool = False):
 def test_build_template_from_function():
+    classes = [item.__annotations__['return'].__name__ for item in type_to_loader_dict.values()]
+
+    # Raise error if name is not in chains
+    if name not in classes:
+        raise ValueError(f'{name} not found')
+
+    for _type, v in type_to_loader_dict.items():
+    # Test cases will go here
+    pass
+
+def test_get_default_factory():
+    # Test cases will go here
+    pass
+
+def test_get_base_classes():
+    # Test cases will go here
+    pass
+
+def test_format_dict():
     # Test cases will go here
     pass
     classes = [item.__annotations__['return'].__name__ for item in type_to_loader_dict.values()]
@@ -64,9 +83,6 @@ def build_template_from_class(name: str, type_to_cls_dict: Dict, add_function: b
         raise ValueError(f'{name} not found.')
 
     for _type, v in type_to_cls_dict.items():
-def test_build_template_from_class():
-    # Test cases will go here
-    pass
         if v.__name__ == name:
             _class = v
 
@@ -117,9 +133,6 @@ def build_template_from_method(
         raise ValueError(f'{class_name} not found.')
 
     for _type, v in type_to_cls_dict.items():
-def test_build_template_from_method():
-    # Test cases will go here
-    pass
         if v.__name__ == class_name:
             _class = v
 
@@ -232,9 +245,6 @@ def type_to_string(tp):
             type_to_string(arg) for arg in tp.__args__ if arg is not type(None))  # noqa
         return f'{tp.__name__}[{args_str}]'
     else:
-        return tp.__name__
-
-
 def format_dict(d, name: Optional[str] = None):
     """
     Formats a dictionary by removing certain keys and modifying the
@@ -250,9 +260,6 @@ def format_dict(d, name: Optional[str] = None):
 
     # Process remaining keys
     for key, value in d.items():
-def test_format_dict():
-    # Test cases will go here
-    pass
         if key == '_type':
             continue
 
