@@ -17,8 +17,8 @@ def build_template_from_function(name: str, type_to_loader_dict: Dict, add_funct
         raise ValueError(f'{name} not found')
 
     for _type, v in type_to_loader_dict.items():
-
-def test_build_template_from_function():
+        def test_build_template_from_function():
+            pass
     classes = [item.__annotations__['return'].__name__ for item in type_to_loader_dict.values()]
 
     # Raise error if name is not in chains
@@ -26,20 +26,68 @@ def test_build_template_from_function():
         raise ValueError(f'{name} not found')
 
     for _type, v in type_to_loader_dict.items():
-def test_build_template_from_function():
+        def test_build_template_from_function():
+            # Test case 1: Test with valid inputs
+            # Test case 2: Test with invalid name
+            # Test case 3: Test with empty type_to_loader_dict
+            # Test case 4: Test with add_function set to True
+            pass
+
+                if v.__annotations__['return'].__name__ == name:
+                    _class = v.__annotations__['return']
+        
+                    # Get the docstring
+                    docs = parse(_class.__doc__)
+        
+                    variables = {'_type': _type}
+                    for class_field_items, value in _class.__fields__.items():
+                        if class_field_items in ['callback_manager']:
+                            continue
+                        variables[class_field_items] = {}
+                        for name_, value_ in value.__repr_args__():
+                            if name_ == 'default_factory':
+                                try:
+                                    variables[class_field_items]['default'] = get_default_factory(
+                                        module=_class.__base__.__module__, function=value_)
+                                except Exception:
+                                    variables[class_field_items]['default'] = None
+                            elif name_ not in ['name']:
+                                variables[class_field_items][name_] = value_
+        
+                        variables[class_field_items]['placeholder'] = (
+                    docs.params[class_field_items] if class_field_items in docs.params else '')
+            # Adding function to base classes to allow
+            # the output to be a function
+            base_classes = get_base_classes(_class)
+            if add_function:
+                base_classes.append('function')
+
+            return {
+                'template': format_dict(variables, name),
+                'description': docs.short_description or '',
+                'base_classes': base_classes,
+def build_template_from_class(name: str, type_to_cls_dict: Dict, add_function: bool = False):
+    classes = [item.__name__ for item in type_to_cls_dict.values()]
+
+    # Raise error if name is not in chains
+    if name not in classes:
+        raise ValueError(f'{name} not found.')
+
+    for _type, v in type_to_cls_dict.items():
+        def test_build_template_from_class():
+            # Test case 1: Test with valid inputs
+            # Test case 2: Test with invalid name
+            # Test case 3: Test with empty type_to_cls_dict
+            # Test case 4: Test with add_function set to True
+            pass
+
+        for class_field_items, value in _class.__fields__.items():
+    if class_field_items in ['callback_manager']:
     # Test case 1: Test with valid inputs
     # Test case 2: Test with invalid name
-    # Test case 3: Test with empty type_to_loader_dict
+    # Test case 3: Test with empty type_to_cls_dict
     # Test case 4: Test with add_function set to True
     pass
-
-if v.__annotations__['return'].__name__ == name:
-    _class = v.__annotations__['return']
-
-            # Get the docstring
-            docs = parse(_class.__doc__)
-
-            variables = {'_type': _type}
             for class_field_items, value in _class.__fields__.items():
                 if class_field_items in ['callback_manager']:
                     continue
@@ -55,58 +103,6 @@ if v.__annotations__['return'].__name__ == name:
                         variables[class_field_items][name_] = value_
 
                 variables[class_field_items]['placeholder'] = (
-                    docs.params[class_field_items] if class_field_items in docs.params else '')
-            # Adding function to base classes to allow
-            # the output to be a function
-            base_classes = get_base_classes(_class)
-            if add_function:
-                base_classes.append('function')
-
-            return {
-                'template': format_dict(variables, name),
-                'description': docs.short_description or '',
-                'base_classes': base_classes,
-            }
-
-
-def build_template_from_class(name: str, type_to_cls_dict: Dict, add_function: bool = False):
-    classes = [item.__name__ for item in type_to_cls_dict.values()]
-
-    # Raise error if name is not in chains
-    if name not in classes:
-        raise ValueError(f'{name} not found.')
-
-    for _type, v in type_to_cls_dict.items():
-
-def test_build_template_from_class():
-    # Test case 1: Test with valid inputs
-    # Test case 2: Test with invalid name
-    # Test case 3: Test with empty type_to_cls_dict
-    # Test case 4: Test with add_function set to True
-    pass
-
-for class_field_items, value in _class.__fields__.items():
-    if class_field_items in ['callback_manager']:
-    # Test case 1: Test with valid inputs
-    # Test case 2: Test with invalid name
-    # Test case 3: Test with empty type_to_cls_dict
-    # Test case 4: Test with add_function set to True
-    pass
-                for class_field_items, value in _class.__fields__.items():
-                    if class_field_items in ['callback_manager']:
-                        continue
-                    variables[class_field_items] = {}
-                    for name_, value_ in value.__repr_args__():
-                        if name_ == 'default_factory':
-                            try:
-                                variables[class_field_items]['default'] = get_default_factory(
-                                    module=_class.__base__.__module__, function=value_)
-                            except Exception:
-                                variables[class_field_items]['default'] = None
-                        elif name_ not in ['name']:
-                            variables[class_field_items][name_] = value_
-
-                    variables[class_field_items]['placeholder'] = (
                         docs.params[class_field_items] if class_field_items in docs.params else '')
             base_classes = get_base_classes(_class)
             # Adding function to base classes to allow
@@ -117,9 +113,6 @@ for class_field_items, value in _class.__fields__.items():
                 'template': format_dict(variables, name),
                 'description': docs.short_description or '',
                 'base_classes': base_classes,
-            }
-
-
 def build_template_from_method(
     class_name: str,
     method_name: str,
@@ -133,39 +126,38 @@ def build_template_from_method(
         raise ValueError(f'{class_name} not found.')
 
     for _type, v in type_to_cls_dict.items():
+        def test_build_template_from_method():
+            # Test case 1: Test with valid inputs
+            pass
 
-def get_default_factory(module: str, function: str):
+        pattern = r'<function (\w+)>'
 
-def test_build_template_from_method():
-    # Test case 1: Test with valid inputs
-    pass
-
-pattern = r'<function (\w+)>'
-
-if match := re.search(pattern, function):
-    imported_module = importlib.import_module(module)
-    return getattr(imported_module, match[1])()
-return None
-
-
-def type_to_string(tp):
-    if getattr(tp, '__args__', None):
-        args_str = ','.join(
-            type_to_string(arg) for arg in tp.__args__ if arg is not type(None))  # noqa
-        return f'{tp.__name__}[{args_str}]'
-    else:
-        return tp.__name__
-
-
-def format_dict(d, name: Optional[str] = None):
-
-# Test cases for type_to_string
-def test_type_to_string():
-    # Test case 1: Test with type having __args__ attribute
-    # Test case 2: Test with type not having __args__ attribute
-    pass
-
-def test_get_default_factory():
+                if match := re.search(pattern, function):
+                    imported_module = importlib.import_module(module)
+                    return getattr(imported_module, match[1])()
+                return None
+        
+        
+        def type_to_string(tp):
+            if getattr(tp, '__args__', None):
+                args_str = ','.join(
+                    type_to_string(arg) for arg in tp.__args__ if arg is not type(None))  # noqa
+                return f'{tp.__name__}[{args_str}]'
+            else:
+                return tp.__name__
+        
+            def test_type_to_string():
+                # Test case 1: Test with type having __args__ attribute
+                # Test case 2: Test with type not having __args__ attribute
+                pass
+        
+        
+        def format_dict(d, name: Optional[str] = None):
+            def test_get_default_factory():
+                # Test case 1: Test with valid module and function
+                # Test case 2: Test with invalid module
+                # Test case 3: Test with invalid function
+                pass
     # Test case 1: Test with valid module and function
     # Test case 2: Test with invalid module
     # Test case 3: Test with invalid function
@@ -233,7 +225,12 @@ def get_base_classes(cls):
     if not result:
         result = [cls.__name__]
     return list(set(result + [cls.__name__]))
-def test_get_base_classes():
+
+    def test_get_base_classes():
+        # Test case 1: Test with class having multiple base classes
+        # Test case 2: Test with class having single base class
+        # Test case 3: Test with class having no base class
+        pass
     # Test case 1: Test with class having multiple base classes
     # Test case 2: Test with class having single base class
     # Test case 3: Test with class having no base class
@@ -256,8 +253,18 @@ def type_to_string(tp):
     else:
         return tp.__name__
 
+    def test_type_to_string():
+        # Test case 1: Test with type having __args__ attribute
+        # Test case 2: Test with type not having __args__ attribute
+        pass
+
 
 def format_dict(d, name: Optional[str] = None):
+    def test_get_default_factory():
+        # Test case 1: Test with valid module and function
+        # Test case 2: Test with invalid module
+        # Test case 3: Test with invalid function
+        pass
     """
     Formats a dictionary by removing certain keys and modifying the
     values of other keys.
@@ -274,54 +281,53 @@ def format_dict(d, name: Optional[str] = None):
 for key, value in d.items():
 
 # Test cases for format_dict
-if key == '_type':
-    continue
+    if key == '_type':
+        continue
 
-_type = value['type']
+    _type = value['type']
 
-if not isinstance(_type, str):
-    _type = type_to_string(_type)
+    if not isinstance(_type, str):
+        _type = type_to_string(_type)
 
-# Remove 'Optional' wrapper
-if 'Optional' in _type:
-    _type = _type.replace('Optional[', '')[:-1]
-    value['required'] = False
+    # Remove 'Optional' wrapper
+    if 'Optional' in _type:
+        _type = _type.replace('Optional[', '')[:-1]
+        value['required'] = False
 
-# Check for list type
-if 'List' in _type or 'Sequence' in _type or 'Set' in _type:
-    _type = (_type.replace('List[', '').replace('Sequence[', '').replace('Set[', '')[:-1])
-    value['list'] = True
-else:
-    value['list'] = False
+    # Check for list type
+    if 'List' in _type or 'Sequence' in _type or 'Set' in _type:
+        _type = (_type.replace('List[', '').replace('Sequence[', '').replace('Set[', '')[:-1])
+        value['list'] = True
+    else:
+        value['list'] = False
 
-# Replace 'Mapping' with 'dict'
-_type = _type.replace('Mapping', 'dict')
+    # Replace 'Mapping' with 'dict'
+    _type = _type.replace('Mapping', 'dict')
 
-# Change type from str to Tool
-value['type'] = 'Tool' if key in ['allowed_tools'] else _type
+    # Change type from str to Tool
+    value['type'] = 'Tool' if key in ['allowed_tools'] else _type
 
-value['type'] = 'int' if key in ['max_value_length'] else value['type']
-
-# Show or not field
-value['show'] = bool((value['required'] and
-                      (key not in ['input_variables'] or name == 'SequentialChain')) or
-                     key in FORCE_SHOW_FIELDS or 'api_key' in key)
-
-# Add password field
-value['password'] = any(text in key.lower() for text in ['password', 'token', 'api', 'key'])
-
-# Add multline
-value['multiline'] = key in [
-
-def test_format_dict():
-    # Test case 1: Test with valid dictionary and name
-    # Test case 2: Test with empty dictionary
-    # Test case 3: Test with None name
-    pass
+        # Show or not field
+        value['show'] = bool((value['required'] and
+                              (key not in ['input_variables'] or name == 'SequentialChain')) or
+                             key in FORCE_SHOW_FIELDS or 'api_key' in key)
+    
+        # Add password field
+        value['password'] = any(text in key.lower() for text in ['password', 'token', 'api', 'key'])
+    
+        # Add multline
+        value['multiline'] = key in [
             'suffix',
             'prefix',
             'template',
             'examples',
+        ]
+    
+        def test_format_dict():
+            # Test case 1: Test with valid dictionary and name
+            # Test case 2: Test with empty dictionary
+            # Test case 3: Test with None name
+            pass
             'code',
             'headers',
             'format_instructions',
