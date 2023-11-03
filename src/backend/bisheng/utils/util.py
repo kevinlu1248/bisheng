@@ -10,7 +10,47 @@ from docstring_parser import parse  # type: ignore
 
 
 def build_template_from_function(name: str, type_to_loader_dict: Dict, add_function: bool = False):
-    pass
+    classes = [item.__annotations__['return'].__name__ for item in type_to_loader_dict.values()]
+
+    # Raise error if name is not in chains
+    if name not in classes:
+        raise ValueError(f'{name} not found')
+
+    for _type, v in type_to_loader_dict.items():
+        if v.__annotations__['return'].__name__ == name:
+            _class = v.__annotations__['return']
+
+            # Get the docstring
+            docs = parse(_class.__doc__)
+
+            variables = {'_type': _type}
+            for class_field_items, value in _class.__fields__.items():
+                if class_field_items in ['callback_manager']:
+                    continue
+                variables[class_field_items] = {}
+                for name_, value_ in value.__repr_args__():
+                    if name_ == 'default_factory':
+                        try:
+                            variables[class_field_items]['default'] = get_default_factory(
+                                module=_class.__base__.__module__, function=value_)
+                        except Exception:
+                            variables[class_field_items]['default'] = None
+                    elif name_ not in ['name']:
+                        variables[class_field_items][name_] = value_
+
+                variables[class_field_items]['placeholder'] = (
+                    docs.params[class_field_items] if class_field_items in docs.params else '')
+            # Adding function to base classes to allow
+            # the output to be a function
+            base_classes = get_base_classes(_class)
+            if add_function:
+                base_classes.append('function')
+
+            return {
+                'template': format_dict(variables, name),
+                'description': docs.short_description or '',
+                'base_classes': base_classes,
+            }
 
 def test_build_template_from_function():
     # Test cases will go here
@@ -238,7 +278,99 @@ def type_to_string(tp):
         return tp.__name__
 
 def format_dict(d, name: Optional[str] = None):
-    pass
+    """
+    Formats a dictionary by removing certain keys and modifying the
+    values of other keys.
+
+    Args:
+        d: the dictionary to format
+        name: the name of the class to format
+
+    Returns:
+        A new dictionary with the desired modifications applied.
+    """
+
+    # Process remaining keys
+    for key, value in d.items():
+        if key == '_type':
+            continue
+
+        _type = value['type']
+
+        if not isinstance(_type, str):
+            _type = type_to_string(_type)
+
+        # Remove 'Optional' wrapper
+        if 'Optional' in _type:
+            _type = _type.replace('Optional[', '')[:-1]
+            value['required'] = False
+
+        # Check for list type
+        if 'List' in _type or 'Sequence' in _type or 'Set' in _type:
+            _type = (_type.replace('List[', '').replace('Sequence[', '').replace('Set[', '')[:-1])
+            value['list'] = True
+        else:
+            value['list'] = False
+
+        # Replace 'Mapping' with 'dict'
+        if 'Mapping' in _type:
+            _type = _type.replace('Mapping', 'dict')
+
+        # Change type from str to Tool
+        value['type'] = 'Tool' if key in ['allowed_tools'] else _type
+
+        value['type'] = 'int' if key in ['max_value_length'] else value['type']
+
+        # Show or not field
+        value['show'] = bool((value['required'] and
+                              (key not in ['input_variables'] or name == 'SequentialChain')) or
+                             key in FORCE_SHOW_FIELDS or 'api_key' in key)
+
+        # Add password field
+        value['password'] = any(text in key.lower() for text in ['password', 'token', 'api', 'key'])
+
+        # Add multline
+        value['multiline'] = key in [
+            'suffix',
+            'prefix',
+            'template',
+            'examples',
+            'code',
+            'headers',
+            'format_instructions',
+        ]
+
+        # Replace dict type with str
+        if 'dict' in value['type'].lower():
+            value['type'] = 'code'
+
+        if key == 'dict_':
+            value['type'] = 'file'
+            value['suffixes'] = ['.json', '.yaml', '.yml']
+            value['fileTypes'] = ['json', 'yaml', 'yml']
+
+        # Replace default value with actual value
+        if 'default' in value:
+            value['value'] = value['default']
+            value.pop('default')
+
+        if key == 'headers':
+            value['value'] = """{'Authorization':
+            'Bearer <token>'}"""
+        # Add options to openai
+        if name == 'OpenAI' and key == 'model_name':
+            value['options'] = constants.OPENAI_MODELS
+            value['list'] = True
+            value['value'] = constants.OPENAI_MODELS[0]
+        elif name == 'ChatOpenAI' and key == 'model_name':
+            value['options'] = constants.CHAT_OPENAI_MODELS
+            value['list'] = True
+            value['value'] = constants.CHAT_OPENAI_MODELS[0]
+        elif (name == 'Anthropic' or name == 'ChatAnthropic') and key == 'model_name':
+            value['options'] = constants.ANTHROPIC_MODELS
+            value['list'] = True
+            value['value'] = constants.ANTHROPIC_MODELS[0]
+    return d
     """
     Formats a dictionary by removing certain keys and modifying the
     values of other keys.
