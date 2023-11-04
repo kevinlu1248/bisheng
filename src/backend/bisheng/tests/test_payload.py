@@ -1,5 +1,5 @@
 import unittest
-from src.backend.bisheng.utils.payload import extract_input_variables, get_root_node, build_json
+from backend.bisheng.utils.payload import extract_input_variables, get_root_node, build_json
 
 class TestPayloadFunctions(unittest.TestCase):
 
