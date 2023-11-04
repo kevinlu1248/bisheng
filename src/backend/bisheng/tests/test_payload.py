@@ -6,6 +6,32 @@ class TestPayload(unittest.TestCase):
     def test_extract_input_variables(self):
         # Test case: 'prompt' type with input_variables field
         nodes = [{'data': {'node': {'template': {'_type': 'prompt', 'template': {'value': 'Hello {name}'}, 'input_variables': {}}}}}]
+    def test_get_root_node(self):
+        class Node:
+            def __init__(self, base_type):
+                self.base_type = base_type
+        class Edge:
+            def __init__(self, source):
+                self.source = source
+        class Graph:
+            def __init__(self, nodes, edges):
+                self.nodes = nodes
+                self.edges = edges
+
+        # Test case: Graph with no incoming edges and only one node
+        graph1 = Graph([Node('inputOutput')], [])
+        self.assertEqual(get_root_node(graph1), {Node('inputOutput')})
+
+        # Test case: Graph with one node and one incoming edge
+        node = Node('inputOutput')
+        graph2 = Graph([node], [Edge(node)])
+        self.assertEqual(get_root_node(graph2), {node})
+
+        # Test case: Graph with an input node
+        input_node = Node('inputOutput')
+        other_node = Node('other')
+        graph3 = Graph([input_node, other_node], [Edge(input_node), Edge(other_node)])
+        self.assertEqual(get_root_node(graph3), {input_node, other_node})
         result = extract_input_variables(nodes)
         self.assertEqual(result[0]['data']['node']['template']['input_variables']['value'], ['name'])
     
