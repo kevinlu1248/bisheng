@@ -38,11 +38,50 @@ class TestPayloadFunctions(unittest.TestCase):
                     }
                 }
             }
+        ],
+        [
+            {
+                'data': {
+                    'node': {
+                        'template': {
+                            '_type': 'prompt',
+                            'template': {'value': 'Hello {name}, {greeting}'},
+                            'input_variables': {}
+                        }
+                    }
+                }
+            },
+            {
+                'data': {
+                    'node': {
+                        'template': {
+                            '_type': 'few_shot',
+                            'prefix': {'value': 'Hello {name}'},
+                            'suffix': {'value': ', {greeting}'},
+                            'input_variables': {}
+                        }
+                    }
+                }
+            },
+            {
+                'data': {
+                    'node': {
+                        'template': {
+                            '_type': 'other',
+                            'input_variables': {}
+                        }
+                    }
+                }
+            }
         ]
-        result = extract_input_variables(nodes)
-        self.assertEqual(result[0]['data']['node']['template']['input_variables']['value'], ['name'])
-        self.assertEqual(result[1]['data']['node']['template']['input_variables']['value'], ['name'])
-        self.assertEqual(result[2]['data']['node']['template']['input_variables']['value'], [])
+        result1 = extract_input_variables(nodes[0])
+        result2 = extract_input_variables(nodes[1])
+        self.assertEqual(result1[0]['data']['node']['template']['input_variables']['value'], ['name'])
+        self.assertEqual(result1[1]['data']['node']['template']['input_variables']['value'], ['name'])
+        self.assertEqual(result1[2]['data']['node']['template']['input_variables']['value'], [])
+        self.assertEqual(result2[0]['data']['node']['template']['input_variables']['value'], ['name', 'greeting'])
+        self.assertEqual(result2[1]['data']['node']['template']['input_variables']['value'], ['name', 'greeting'])
+        self.assertEqual(result2[2]['data']['node']['template']['input_variables']['value'], [])
 
     def test_get_root_node(self):
         class Node:
