@@ -4,15 +4,35 @@ from bisheng.utils.payload import extract_input_variables, get_root_node, build_
 
 class TestPayload(unittest.TestCase):
     def test_extract_input_variables(self):
-        nodes = [
-            {'data': {'node': {'template': {'_type': 'prompt', 'template': {'value': 'Hello {name}'}, 'input_variables': {}}}}},
-            {'data': {'node': {'template': {'_type': 'few_shot', 'prefix': {'value': 'Hello '}, 'suffix': {'value': '{name}'}, 'input_variables': {}}}}},
-            {'data': {'node': {'template': {'_type': 'other', 'input_variables': {}}}}}
-        ]
+        # Test case: 'prompt' type with input_variables field
+        nodes = [{'data': {'node': {'template': {'_type': 'prompt', 'template': {'value': 'Hello {name}'}, 'input_variables': {}}}}}]
         result = extract_input_variables(nodes)
         self.assertEqual(result[0]['data']['node']['template']['input_variables']['value'], ['name'])
-        self.assertEqual(result[1]['data']['node']['template']['input_variables']['value'], ['name'])
-        self.assertEqual(result[2]['data']['node']['template']['input_variables']['value'], [])
+    
+        # Test case: 'few_shot' type with input_variables field
+        nodes = [{'data': {'node': {'template': {'_type': 'few_shot', 'prefix': {'value': 'Hello '}, 'suffix': {'value': '{name}'}, 'input_variables': {}}}}}]
+        result = extract_input_variables(nodes)
+        self.assertEqual(result[0]['data']['node']['template']['input_variables']['value'], ['name'])
+    
+        # Test case: other type with input_variables field
+        nodes = [{'data': {'node': {'template': {'_type': 'other', 'input_variables': {}}}}}]
+        result = extract_input_variables(nodes)
+        self.assertEqual(result[0]['data']['node']['template']['input_variables']['value'], [])
+    
+        # Test case: 'prompt' type without input_variables field
+        nodes = [{'data': {'node': {'template': {'_type': 'prompt', 'template': {'value': 'Hello {name}'}}}}}]
+        result = extract_input_variables(nodes)
+        self.assertEqual(result[0]['data']['node']['template'].get('input_variables'), None)
+    
+        # Test case: 'few_shot' type without input_variables field
+        nodes = [{'data': {'node': {'template': {'_type': 'few_shot', 'prefix': {'value': 'Hello '}, 'suffix': {'value': '{name}'}}}}}]
+        result = extract_input_variables(nodes)
+        self.assertEqual(result[0]['data']['node']['template'].get('input_variables'), None)
+    
+        # Test case: other type without input_variables field
+        nodes = [{'data': {'node': {'template': {'_type': 'other'}}}}]
+        result = extract_input_variables(nodes)
+        self.assertEqual(result[0]['data']['node']['template'].get('input_variables'), None)
 
     def test_get_root_node(self):
         class Node:
