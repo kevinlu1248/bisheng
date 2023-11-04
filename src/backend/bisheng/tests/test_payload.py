@@ -27,8 +27,12 @@ class TestPayload(unittest.TestCase):
                 self.edges = edges
         graph1 = Graph([Node('inputOutput')], [Edge(Node('inputOutput'))])
         graph2 = Graph([Node('other')], [Edge(Node('other'))])
+        graph3 = Graph([Node('inputOutput')], [])
+        graph4 = Graph([Node('other')], [])
         self.assertEqual(get_root_node(graph1), {Node('inputOutput')})
         self.assertEqual(get_root_node(graph2), {Node('other')})
+        self.assertEqual(get_root_node(graph3), {Node('inputOutput')})
+        self.assertEqual(get_root_node(graph4), {Node('other')})
 
     def test_build_json(self):
         class Node:
