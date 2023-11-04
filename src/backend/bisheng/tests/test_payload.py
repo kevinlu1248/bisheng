@@ -88,7 +88,29 @@ class TestPayload(unittest.TestCase):
                 return [node for node in self.nodes if node.data == target.data]
             def get_children_by_node_type(self, node, node_type):
                 return [child for child in node.edges if child.data['node']['template']['type'] == node_type]
-        root = Node({'node': {'template': {'_type': 'prompt', 'template': {'value': 'Hello {name}', 'type': 'string', 'required': True, 'list': False}}}})
+        
+        # Test case: root node has no "node" key
+        root = Node({'data': {'template': {'_type': 'prompt', 'template': {'value': 'Hello {name}', 'type': 'string', 'required': True, 'list': False}}}}, [])
         graph = Graph([root])
         result = build_json(root, graph)
         self.assertEqual(result, {'_type': 'prompt', 'template': 'Hello {name}'})
+        
+        # Test case: root node has multiple children of the same type
+        child1 = Node({'node': {'template': {'_type': 'prompt', 'template': {'value': 'Hello {name}', 'type': 'string', 'required': True, 'list': False}}}}, [])
+        child2 = Node({'node': {'template': {'_type': 'prompt', 'template': {'value': 'Hello {name}', 'type': 'string', 'required': True, 'list': False}}}}, [])
+        root = Node({'node': {'template': {'_type': 'prompt', 'template': {'value': 'Hello {name}', 'type': 'string', 'required': True, 'list': False}}}}, [child1, child2])
+        graph = Graph([root, child1, child2])
+        result = build_json(root, graph)
+        self.assertEqual(result, {'_type': 'prompt', 'template': 'Hello {name}'})
+        
+        # Test case: value of a key in the template is a dictionary
+        root = Node({'node': {'template': {'_type': 'prompt', 'template': {'value': {'name': 'John'}, 'type': 'string', 'required': True, 'list': False}}}}, [])
+        graph = Graph([root])
+        result = build_json(root, graph)
+        self.assertEqual(result, {'_type': 'prompt', 'template': {'name': 'John'}})
+        
+        # Test case: value of a key in the template is a list
+        root = Node({'node': {'template': {'_type': 'prompt', 'template': {'value': ['Hello', 'John'], 'type': 'string', 'required': True, 'list': True}}}}, [])
+        graph = Graph([root])
+        result = build_json(root, graph)
+        self.assertEqual(result, {'_type': 'prompt', 'template': ['Hello', 'John']})
