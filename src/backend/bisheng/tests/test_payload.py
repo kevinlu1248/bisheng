@@ -99,6 +99,33 @@ class TestPayloadFunctions(unittest.TestCase):
         self.assertEqual(result, {graph})
 
     def test_build_json(self):
+    def test_get_root_node(self):
+        class Node:
+            def __init__(self, base_type=None):
+                self.base_type = base_type
+                self.edges = []
+
+        class Edge:
+            def __init__(self, source):
+                self.source = source
+
+        # Test case: Graph with one node
+        graph = Node('inputOutput')
+        graph.edges.append(Edge(Node()))
+        result = get_root_node(graph)
+        self.assertEqual(result, {graph})
+
+        # Test case: Graph with multiple nodes
+        graph = Node('inputOutput')
+        graph.edges.append(Edge(Node()))
+        graph.edges.append(Edge(Node()))
+        result = get_root_node(graph)
+        self.assertEqual(result, {graph})
+
+        # Test case: Graph with no nodes
+        graph = Node()
+        result = get_root_node(graph)
+        self.assertEqual(result, set())
         class Node:
             def __init__(self, data=None, edges=None, node_type=None):
                 self.data = data if data else {}
